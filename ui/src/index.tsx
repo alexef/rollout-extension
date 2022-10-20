@@ -51,11 +51,14 @@ const parseInfoFromResourceNode = (
 
   ro.containers = [];
   if (spec.template) {
+    console.log("we have template")
     for (const c of spec.template?.spec?.containers) {
       ro.containers.push({ name: c.name, image: c.image });
     }
   } else if (spec.workloadRef) {
+    console.log("we have workloadref")
     const deployment = parseWorkloadRef(tree, resource);
+    console.log(deployment)
     if (deployment && deployment.spec) {
       for (const c of deployment.spec.template?.spec?.containers) {
         ro.containers.push({ name: c.name, image: c.image });
@@ -205,7 +208,7 @@ const parseReplicaSets = (tree: any, rollout: any): RolloutReplicaSetInfo[] => {
 const parseWorkloadRef = (tree: any, rollout: any): State | undefined =>
   (tree.nodes.find(
     (node) =>
-      node.kind === "Deployment" && node.name === rollout.spec.workloadRef.name
+      (node.kind === rollout.spec.workloadRef.kind) && (node.name === rollout.spec.workloadRef.name)
   ) as State);
 
 interface ApplicationResourceTree {}
